@@ -3,22 +3,139 @@ const categoryController = require('../controllers/categoryController');
 
 const router = express.Router();
 
-// Get all categories
+/**
+ * @swagger
+ * /api/categories:
+ *   get:
+ *     summary: Retrieve all categories
+ *     responses:
+ *       200:
+ *         description: List of all categories
+ */
 router.get('/', categoryController.getAllCategories);
 
-// Create a new category
+/**
+ * @swagger
+ * /api/categories:
+ *   post:
+ *     summary: Create a new category
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Category created successfully
+ */
 router.post('/', categoryController.createCategory);
 
-// Get category by ID
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   get:
+ *     summary: Retrieve a category by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the category
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A single category
+ *       404:
+ *         description: Category not found
+ */
 router.get('/:id', categoryController.getCategoryById);
 
-// Update a category by ID
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   put:
+ *     summary: Update a category by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the category
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *       404:
+ *         description: Category not found
+ */
 router.put('/:id', categoryController.updateCategory);
 
-// Route for patching a category by ID
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   patch:
+ *     summary: Partially update a category by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the category
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category patched successfully
+ *       404:
+ *         description: Category not found
+ */
 router.patch('/:id', categoryController.patchCategory);
 
-// Delete a category by ID
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   delete:
+ *     summary: Delete a category by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the category
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully
+ *       404:
+ *         description: Category not found
+ */
 router.delete('/:id', categoryController.deleteCategory);
 
 module.exports = router;
