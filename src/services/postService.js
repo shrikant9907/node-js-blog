@@ -1,5 +1,6 @@
 const Post = require('../models/postModel');
 const slugify = require('slugify');
+const logger = require('../utils/logger');  // Importing the logger
 
 // Get all posts with pagination
 const getAllPosts = async (skip, limit) => {
@@ -11,7 +12,8 @@ const getAllPosts = async (skip, limit) => {
 
     return { success: true, message: 'Posts fetched successfully', data: posts };
   } catch (error) {
-    return { success: false, message: 'Error fetching posts', data: null };
+    logger.error('Error fetching posts:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching posts', data: error.message };
   }
 };
 
@@ -21,7 +23,8 @@ const getTotalPostsCount = async () => {
     const count = await Post.countDocuments();
     return { success: true, message: 'Total posts count fetched successfully', data: count };
   } catch (error) {
-    return { success: false, message: 'Error fetching posts count', data: null };
+    logger.error('Error fetching posts count:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching posts count', data: error.message };
   }
 };
 
@@ -29,6 +32,7 @@ const getTotalPostsCount = async () => {
 const createPost = async ({ title, content, author }) => {
   try {
     if (!title || typeof title !== 'string' || title.trim() === '') {
+      logger.warn('Post title is required and should be a valid string');  // Log a warning if the title is invalid
       return { success: false, message: 'Post title is required and should be a valid string', data: null };
     }
 
@@ -48,10 +52,11 @@ const createPost = async ({ title, content, author }) => {
     });
 
     const savedPost = await newPost.save();
+    logger.info(`Post created successfully: ${savedPost._id}`);  // Log successful post creation
     return { success: true, message: 'Post created successfully', data: savedPost };
   } catch (error) {
-    console.log('error', error)
-    return { success: false, message: 'Error creating post', data: null };
+    logger.error('Error creating post:', error);  // Log the error using winston
+    return { success: false, message: 'Error creating post', data: error.message };
   }
 };
 
@@ -60,11 +65,13 @@ const getPostById = async (id) => {
   try {
     const post = await Post.findById(id);
     if (!post) {
+      logger.warn(`Post with ID ${id} not found`);  // Log a warning if the post isn't found
       return { success: false, message: 'Post not found', data: null };
     }
     return { success: true, message: 'Post found', data: post };
   } catch (error) {
-    return { success: false, message: 'Error fetching post', data: null };
+    logger.error('Error fetching post by ID:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching post', data: error.message };
   }
 };
 
@@ -78,12 +85,15 @@ const updatePost = async (id, { title, content, author }) => {
     );
 
     if (!updatedPost) {
+      logger.warn(`Post with ID ${id} not found for update`);  // Log a warning if the post doesn't exist
       return { success: false, message: 'Post not found', data: null };
     }
 
+    logger.info(`Post with ID ${id} updated successfully`);  // Log successful post update
     return { success: true, message: 'Post updated successfully', data: updatedPost };
   } catch (error) {
-    return { success: false, message: 'Error updating post', data: null };
+    logger.error('Error updating post:', error);  // Log the error using winston
+    return { success: false, message: 'Error updating post', data: error.message };
   }
 };
 
@@ -97,12 +107,15 @@ const patchPost = async (id, updateFields) => {
     );
 
     if (!updatedPost) {
+      logger.warn(`Post with ID ${id} not found for partial update`);  // Log a warning if the post isn't found
       return { success: false, message: 'Post not found', data: null };
     }
 
+    logger.info(`Post with ID ${id} partially updated successfully`);  // Log successful partial update
     return { success: true, message: 'Post updated successfully', data: updatedPost };
   } catch (error) {
-    return { success: false, message: 'Error updating post', data: null };
+    logger.error('Error updating post (patch):', error);  // Log the error using winston
+    return { success: false, message: 'Error updating post', data: error.message };
   }
 };
 
@@ -112,12 +125,15 @@ const deletePost = async (id) => {
     const deletedPost = await Post.findByIdAndDelete(id);
 
     if (!deletedPost) {
+      logger.warn(`Post with ID ${id} not found for deletion`);  // Log a warning if the post isn't found
       return { success: false, message: 'Post not found', data: null };
     }
 
+    logger.info(`Post with ID ${id} deleted successfully`);  // Log successful post deletion
     return { success: true, message: 'Post deleted successfully', data: deletedPost };
   } catch (error) {
-    return { success: false, message: 'Error deleting post', data: null };
+    logger.error('Error deleting post:', error);  // Log the error using winston
+    return { success: false, message: 'Error deleting post', data: error.message };
   }
 };
 

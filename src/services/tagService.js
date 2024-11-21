@@ -1,5 +1,6 @@
 const Tag = require("../models/tagModel");
 const slugify = require('slugify');
+const logger = require('../utils/logger');  // Importing the logger
 
 // Get all tags with pagination
 const getTagsWithPagination = async (skip, limit) => {
@@ -9,9 +10,11 @@ const getTagsWithPagination = async (skip, limit) => {
       .limit(limit)
       .sort({ createdAt: -1 });  // Sort tags by creation date (descending)
 
+    logger.info('Tags fetched successfully');
     return { success: true, message: 'Tags fetched successfully', data: tags };
   } catch (error) {
-    return { success: false, message: 'Error fetching tags', data: null };
+    logger.error('Error fetching tags:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching tags', data: error.message };
   }
 };
 
@@ -19,9 +22,11 @@ const getTagsWithPagination = async (skip, limit) => {
 const getTotalTagsCount = async () => {
   try {
     const count = await Tag.countDocuments();
+    logger.info('Total tags count fetched successfully');
     return { success: true, message: 'Total tags count fetched successfully', data: count };
   } catch (error) {
-    return { success: false, message: 'Error fetching tags count', data: null };
+    logger.error('Error fetching tags count:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching tags count', data: error.message };
   }
 };
 
@@ -29,12 +34,14 @@ const getTotalTagsCount = async () => {
 const createTag = async ({ name }) => {
   try {
     if (!name || typeof name !== 'string' || name.trim() === '') {
+      logger.warn('Tag name is required and should be a valid string');  // Log a warning if the name is invalid
       return { success: false, message: 'Tag name is required and should be a valid string', data: null };
     }
 
     // Check if a tag with the same name already exists
     const existingTag = await Tag.findOne({ name: name.trim() });
     if (existingTag) {
+      logger.warn(`Tag already exists with the name ${name.trim()}`);  // Log a warning if tag already exists
       return { success: false, message: `Tag already exists with the name ${name.trim()}`, data: null };
     }
 
@@ -52,9 +59,11 @@ const createTag = async ({ name }) => {
     });
 
     const savedTag = await newTag.save();
+    logger.info(`Tag created successfully: ${savedTag._id}`);  // Log successful tag creation
     return { success: true, message: 'Tag created successfully', data: savedTag };
   } catch (error) {
-    return { success: false, message: 'Error creating tag', data: null };
+    logger.error('Error creating tag:', error);  // Log the error using winston
+    return { success: false, message: 'Error creating tag', data: error.message };
   }
 };
 
@@ -63,11 +72,14 @@ const getTagById = async (id) => {
   try {
     const tag = await Tag.findById(id);
     if (!tag) {
+      logger.warn(`Tag with ID ${id} not found`);  // Log a warning if the tag is not found
       return { success: false, message: 'Tag not found', data: null };
     }
+    logger.info(`Tag with ID ${id} found`);
     return { success: true, message: 'Tag found', data: tag };
   } catch (error) {
-    return { success: false, message: 'Error fetching tag', data: null };
+    logger.error('Error fetching tag by ID:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching tag', data: error.message };
   }
 };
 
@@ -81,12 +93,15 @@ const updateTag = async (id, { name }) => {
     );
 
     if (!updatedTag) {
+      logger.warn(`Tag with ID ${id} not found for update`);  // Log a warning if the tag isn't found
       return { success: false, message: 'Tag not found', data: null };
     }
 
+    logger.info(`Tag with ID ${id} updated successfully`);  // Log successful tag update
     return { success: true, message: 'Tag updated successfully', data: updatedTag };
   } catch (error) {
-    return { success: false, message: 'Error updating tag', data: null };
+    logger.error('Error updating tag:', error);  // Log the error using winston
+    return { success: false, message: 'Error updating tag', data: error.message };
   }
 };
 
@@ -96,12 +111,15 @@ const deleteTag = async (id) => {
     const deletedTag = await Tag.findByIdAndDelete(id);
 
     if (!deletedTag) {
+      logger.warn(`Tag with ID ${id} not found for deletion`);  // Log a warning if the tag is not found
       return { success: false, message: 'Tag not found', data: null };
     }
 
+    logger.info(`Tag with ID ${id} deleted successfully`);  // Log successful tag deletion
     return { success: true, message: 'Tag deleted successfully', data: deletedTag };
   } catch (error) {
-    return { success: false, message: 'Error deleting tag', data: null };
+    logger.error('Error deleting tag:', error);  // Log the error using winston
+    return { success: false, message: 'Error deleting tag', data: error.message };
   }
 };
 

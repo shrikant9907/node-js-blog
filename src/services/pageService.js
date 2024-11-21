@@ -1,4 +1,5 @@
 const Page = require('../models/pageModel');
+const logger = require('../utils/logger');  // Import the logger
 
 /**
  * Get all pages with pagination
@@ -13,9 +14,11 @@ const getPagesWithPagination = async (skip, limit) => {
       .limit(limit)
       .sort({ createdAt: -1 });  // Sort pages by creation date (descending)
 
+    logger.info('Pages fetched successfully');
     return { success: true, message: 'Pages fetched successfully', data: pages };
   } catch (error) {
-    return { success: false, message: 'Error fetching pages', data: null };
+    logger.error('Error fetching pages:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching pages', data: error.message };
   }
 };
 
@@ -26,9 +29,11 @@ const getPagesWithPagination = async (skip, limit) => {
 const getTotalPagesCount = async () => {
   try {
     const count = await Page.countDocuments();
+    logger.info('Total pages count fetched successfully');
     return { success: true, message: 'Total pages count fetched successfully', data: count };
   } catch (error) {
-    return { success: false, message: 'Error fetching pages count', data: null };
+    logger.error('Error fetching pages count:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching pages count', data: error.message };
   }
 };
 
@@ -40,12 +45,14 @@ const getTotalPagesCount = async () => {
 const createPage = async ({ title, content, metaDescription }) => {
   try {
     if (!title || !content) {
+      logger.warn('Title and content are required');  // Log a warning if title or content is missing
       return { success: false, message: 'Title and content are required', data: null };
     }
 
     // Check if a page with the same title already exists
     const existingPage = await Page.findOne({ title });
     if (existingPage) {
+      logger.warn(`Page with this title already exists: ${title}`);  // Log a warning if the page exists
       return { success: false, message: 'Page with this title already exists', data: existingPage };
     }
 
@@ -59,9 +66,11 @@ const createPage = async ({ title, content, metaDescription }) => {
     });
 
     const savedPage = await newPage.save();
+    logger.info(`Page created successfully with ID: ${savedPage._id}`);  // Log successful page creation
     return { success: true, message: 'Page created successfully', data: savedPage };
   } catch (error) {
-    return { success: false, message: 'Error creating page', data: null };
+    logger.error('Error creating page:', error);  // Log the error using winston
+    return { success: false, message: 'Error creating page', data: error.message };
   }
 };
 
@@ -74,14 +83,15 @@ const getPageById = async (id) => {
   try {
     const page = await Page.findById(id);
 
-    console.log('page', page)
-
     if (!page) {
+      logger.warn(`Page with ID ${id} not found`);  // Log a warning if the page is not found
       return { success: false, message: 'Page not found', data: null };
     }
+    logger.info(`Page with ID ${id} found`);
     return { success: true, message: 'Page found', data: page };
   } catch (error) {
-    return { success: false, message: 'Error fetching page', data: null };
+    logger.error('Error fetching page by ID:', error);  // Log the error using winston
+    return { success: false, message: 'Error fetching page', data: error.message };
   }
 };
 
@@ -100,12 +110,15 @@ const updatePage = async (id, { title, content, metaDescription }) => {
     );
 
     if (!updatedPage) {
+      logger.warn(`Page with ID ${id} not found for update`);  // Log a warning if the page is not found
       return { success: false, message: 'Page not found', data: null };
     }
 
+    logger.info(`Page with ID ${id} updated successfully`);  // Log successful update
     return { success: true, message: 'Page updated successfully', data: updatedPage };
   } catch (error) {
-    return { success: false, message: 'Error updating page', data: null };
+    logger.error('Error updating page:', error);  // Log the error using winston
+    return { success: false, message: 'Error updating page', data: error.message };
   }
 };
 
@@ -119,12 +132,15 @@ const deletePage = async (id) => {
     const deletedPage = await Page.findByIdAndDelete(id);
 
     if (!deletedPage) {
+      logger.warn(`Page with ID ${id} not found for deletion`);  // Log a warning if the page is not found
       return { success: false, message: 'Page not found', data: null };
     }
 
+    logger.info(`Page with ID ${id} deleted successfully`);  // Log successful deletion
     return { success: true, message: 'Page deleted successfully', data: deletedPage };
   } catch (error) {
-    return { success: false, message: 'Error deleting page', data: null };
+    logger.error('Error deleting page:', error);  // Log the error using winston
+    return { success: false, message: 'Error deleting page', data: error.message };
   }
 };
 
