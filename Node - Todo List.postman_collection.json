@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "d9c882ba-a6b8-48d4-b0aa-1bf5f9ab882e",
+		"name": "Node - Todo List",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7726646"
+	},
+	"item": [
+		{
+			"name": "Get Todo List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Todo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Task 1\",\r\n    \"description\": \"Task 1 description\",\r\n    \"completed\": false,\r\n    \"createdAt\": 11111\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Todo",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Task 1 - Updated\",\r\n    \"description\": \"Task 1 description\",\r\n    \"completed\": false,\r\n    \"createdAt\": 11111\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/673abff35ac1096482140c59",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"673abff35ac1096482140c59"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Title (Have)",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"First Task - Updated 2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/673abff35ac1096482140c59",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"673abff35ac1096482140c59"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Todo",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"First Task - Updated\",\r\n    \"description\": \"First Task Desc\",\r\n    \"completed\": false,\r\n    \"createdAt\": 11111\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/673abff35ac1096482140c59",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"673abff35ac1096482140c59"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api/todos",
+			"type": "string"
+		}
+	]
+}

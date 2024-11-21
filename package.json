@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-todolist",
+  "version": "1.0.0",
+  "description": "Todo List API using Node.js, Express, and MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "start": "node --env-file=.env.production app.js",
+    "dev": "nodemon --env-file=.env app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "todo",
+    "API",
+    "Node.js",
+    "Express",
+    "MongoDB"
+  ],
+  "author": "Shrikant Yadav",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "mongoose": "^8.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
