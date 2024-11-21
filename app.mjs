@@ -9,7 +9,7 @@ import swaggerUi from 'swagger-ui-express'; // Import swagger-ui-express
 import categoryRoutes from './src/routes/categoryRoutes.js'; // Adjusted for ES Module import
 // import blogRoutes from './src/routes/blogRoutes.js';
 import tagRoutes from './src/routes/tagRoutes.js';
-// import pageRoutes from './src/routes/pageRoutes.js';
+import pageRoutes from './src/routes/pageRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -52,7 +52,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // app.use('/api/posts', blogRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/tags', tagRoutes);
-// app.use('/api/pages', pageRoutes);
+app.use('/api/pages', pageRoutes);
 
 // Connect with DB
 connectDB();

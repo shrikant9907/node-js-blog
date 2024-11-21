@@ -3,19 +3,112 @@ const pageController = require('../controllers/pageController');
 
 const router = express.Router();
 
-// Get all pages
+/**
+ * @swagger
+ * /api/pages:
+ *   get:
+ *     summary: Retrieve all pages
+ *     responses:
+ *       200:
+ *         description: List of all pages
+ */
 router.get('/', pageController.getAllPages);
 
-// Create a new page
+/**
+ * @swagger
+ * /api/pages:
+ *   post:
+ *     summary: Create a new page
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               metaDescription:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Page created successfully
+ */
 router.post('/', pageController.createPage);
 
-// Get page by ID
+/**
+ * @swagger
+ * /api/pages/{id}:
+ *   get:
+ *     summary: Retrieve a page by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the page
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A single page
+ *       404:
+ *         description: Page not found
+ */
 router.get('/:id', pageController.getPageById);
 
-// Update a page by ID
+/**
+ * @swagger
+ * /api/pages/{id}:
+ *   put:
+ *     summary: Update a page by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the page
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               metaDescription:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Page updated successfully
+ *       404:
+ *         description: Page not found
+ */
 router.put('/:id', pageController.updatePage);
 
-// Delete a page by ID
+/**
+ * @swagger
+ * /api/pages/{id}:
+ *   delete:
+ *     summary: Delete a page by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the page
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Page deleted successfully
+ *       404:
+ *         description: Page not found
+ */
 router.delete('/:id', pageController.deletePage);
 
 module.exports = router;
