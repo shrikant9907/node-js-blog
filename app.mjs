@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express'; // Import swagger-ui-express
 // Importing Routes
 import categoryRoutes from './src/routes/categoryRoutes.js'; // Adjusted for ES Module import
 // import blogRoutes from './src/routes/blogRoutes.js';
-// import tagRoutes from './src/routes/tagRoutes.js';
+import tagRoutes from './src/routes/tagRoutes.js';
 // import pageRoutes from './src/routes/pageRoutes.js';
 
 const app = express();
@@ -51,7 +51,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 // app.use('/api/posts', blogRoutes);
 app.use('/api/categories', categoryRoutes);
-// app.use('/api/tags', tagRoutes);
+app.use('/api/tags', tagRoutes);
 // app.use('/api/pages', pageRoutes);
 
 // Connect with DB
