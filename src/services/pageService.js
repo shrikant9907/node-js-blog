@@ -1,98 +1,138 @@
 const Page = require('../models/pageModel');
 
 /**
- * Service to get all pages from the database
- * @returns {Promise} A promise that resolves to an array of pages
+ * Get all pages with pagination
+ * @param {number} skip - Number of pages to skip for pagination
+ * @param {number} limit - Limit for the number of pages to fetch
+ * @returns {Object} Success or failure message along with the fetched data
  */
-exports.getAllPages = async () => {
+const getPagesWithPagination = async (skip, limit) => {
   try {
-    return await Page.find();
+    const pages = await Page.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });  // Sort pages by creation date (descending)
+
+    return { success: true, message: 'Pages fetched successfully', data: pages };
   } catch (error) {
-    throw new Error('Error fetching pages: ' + error.message);
+    return { success: false, message: 'Error fetching pages', data: null };
   }
 };
 
 /**
- * Service to create a new page
- * @param {Object} pageData - The data to create a page
- * @returns {Promise} A promise that resolves to the newly created page
+ * Get total number of pages for pagination
+ * @returns {Object} Success or failure message along with the total page count
  */
-exports.createPage = async (pageData) => {
+const getTotalPagesCount = async () => {
   try {
-    const existingPage = await Page.findOne({ title: pageData.title });
-    if (existingPage) {
-      throw new Error('Page with this title already exists');
+    const count = await Page.countDocuments();
+    return { success: true, message: 'Total pages count fetched successfully', data: count };
+  } catch (error) {
+    return { success: false, message: 'Error fetching pages count', data: null };
+  }
+};
+
+/**
+ * Create a new page
+ * @param {Object} pageData - Data for the new page
+ * @returns {Object} Success or failure message along with the created page data
+ */
+const createPage = async ({ title, content, metaDescription }) => {
+  try {
+    if (!title || !content) {
+      return { success: false, message: 'Title and content are required', data: null };
     }
+
+    // Check if a page with the same title already exists
+    const existingPage = await Page.findOne({ title });
+    if (existingPage) {
+      return { success: false, message: 'Page with this title already exists', data: existingPage };
+    }
+
+    const slug = title.toLowerCase().split(' ').join('-');  // Generate slug from title
 
     const newPage = new Page({
-      title: pageData.title,
-      content: pageData.content,
-      metaDescription: pageData.metaDescription,
-      slug: pageData.title.toLowerCase().split(' ').join('-'), // Generate slug from title
+      title,
+      content,
+      metaDescription,
+      slug,
     });
 
-    return await newPage.save();
+    const savedPage = await newPage.save();
+    return { success: true, message: 'Page created successfully', data: savedPage };
   } catch (error) {
-    throw new Error('Error creating page: ' + error.message);
+    return { success: false, message: 'Error creating page', data: null };
   }
 };
 
 /**
- * Service to get a page by its ID
- * @param {string} id - The ID of the page
- * @returns {Promise} A promise that resolves to the page object or null if not found
+ * Get a page by ID
+ * @param {string} id - The ID of the page to fetch
+ * @returns {Object} Success or failure message along with the page data
  */
-exports.getPageById = async (id) => {
+const getPageById = async (id) => {
   try {
     const page = await Page.findById(id);
+
+    console.log('page', page)
+
     if (!page) {
-      throw new Error('Page not found');
+      return { success: false, message: 'Page not found', data: null };
     }
-    return page;
+    return { success: true, message: 'Page found', data: page };
   } catch (error) {
-    throw new Error('Error fetching page: ' + error.message);
+    return { success: false, message: 'Error fetching page', data: null };
   }
 };
 
 /**
- * Service to update a page by its ID
- * @param {string} id - The ID of the page to be updated
- * @param {Object} updateData - The updated data
- * @returns {Promise} A promise that resolves to the updated page
+ * Update an existing page
+ * @param {string} id - The ID of the page to update
+ * @param {Object} updateData - The new data for the page
+ * @returns {Object} Success or failure message along with the updated page data
  */
-exports.updatePage = async (id, updateData) => {
+const updatePage = async (id, { title, content, metaDescription }) => {
   try {
-    const page = await Page.findById(id);
-    if (!page) {
-      throw new Error('Page not found');
+    const updatedPage = await Page.findByIdAndUpdate(
+      id,
+      { title, content, metaDescription },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedPage) {
+      return { success: false, message: 'Page not found', data: null };
     }
 
-    const updatedPage = await Page.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
-
-    return updatedPage;
+    return { success: true, message: 'Page updated successfully', data: updatedPage };
   } catch (error) {
-    throw new Error('Error updating page: ' + error.message);
+    return { success: false, message: 'Error updating page', data: null };
   }
 };
 
 /**
- * Service to delete a page by its ID
- * @param {string} id - The ID of the page to be deleted
- * @returns {Promise} A promise that resolves to the deleted page object or null if not found
+ * Delete a page
+ * @param {string} id - The ID of the page to delete
+ * @returns {Object} Success or failure message along with the deleted page data
  */
-exports.deletePage = async (id) => {
+const deletePage = async (id) => {
   try {
-    const page = await Page.findById(id);
-    if (!page) {
-      throw new Error('Page not found');
-    }
-
     const deletedPage = await Page.findByIdAndDelete(id);
-    return deletedPage;
+
+    if (!deletedPage) {
+      return { success: false, message: 'Page not found', data: null };
+    }
+
+    return { success: true, message: 'Page deleted successfully', data: deletedPage };
   } catch (error) {
-    throw new Error('Error deleting page: ' + error.message);
+    return { success: false, message: 'Error deleting page', data: null };
   }
+};
+
+module.exports = {
+  getPagesWithPagination,
+  getTotalPagesCount,
+  createPage,
+  getPageById,
+  updatePage,
+  deletePage,
 };

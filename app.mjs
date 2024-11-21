@@ -10,6 +10,7 @@ import categoryRoutes from './src/routes/categoryRoutes.js'; // Adjusted for ES 
 // import blogRoutes from './src/routes/blogRoutes.js';
 import tagRoutes from './src/routes/tagRoutes.js';
 import pageRoutes from './src/routes/pageRoutes.js';
+import morgan from 'morgan';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +43,7 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Middleware
+app.use(morgan());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(errorHandlerMiddleware); // Error handling middleware

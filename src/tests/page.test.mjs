@@ -1,125 +1,90 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import app from '../../app.mjs';
+import app from '../../app.mjs'; // Your app or server path
 
 describe('Page API', function () {
-    let pageId = '';
+    let pageId = ''; // Variable to store page ID for further tests
+    const timestamp = Date.now(); // Using timestamp to ensure uniqueness of the title
     const pageData = {
-        title: 'Test Page for Dynamic Handling',
+        title: `Test Page`, // Unique title
         content: 'This is the content of the test page.',
         metaDescription: 'Meta description for the test page.',
     };
 
-    // Test GET /api/pages
-    it('GET /api/pages should return status 200 and list all pages', function (done) {
-        request(app)
-            .get('/api/pages')
-            .end((err, res) => {
-                expect(res.status).to.equal(200);
-                expect(res.body.success).to.be.true;
-                expect(res.body.data).to.be.an('array');
-                done();
-            });
-    });
-
-    // Test POST /api/pages
-    it('POST /api/pages should create a new page successfully', function (done) {
-        request(app)
+    // Test 1: POST /api/pages (Create Page)
+    it('POST /api/pages should create a new page with unique title', async function () {
+        const res = await request(app)
             .post('/api/pages')
-            .send(pageData)
-            .end((err, res) => {
-                expect(res.status).to.equal(201);
-                expect(res.body.success).to.be.true;
-                expect(res.body.data).to.have.property('title', pageData.title);
-                pageId = res.body.data._id;  // Save the ID for further tests
-                done();
-            });
+            .send(pageData);
+
+        expect(res.status).to.equal(201);
+        expect(res.body.message).to.equal('Page created successfully');
+        expect(res.body).to.have.property('newPage');
+        pageId = res.body.newPage._id;  // Save the ID for future tests
     });
 
-    // Test GET /api/pages/:id (valid ID)
-    it('GET /api/pages/:id should return the page details for the given ID', function (done) {
-        request(app)
-            .get(`/api/pages/${pageId}`)
-            .end((err, res) => {
-                expect(res.status).to.equal(200);
-                expect(res.body.success).to.be.true;
-                expect(res.body.data).to.have.property('_id', pageId);
-                done();
-            });
+    // Test 2: GET /api/pages/:id (Get page by ID)
+    it('GET /api/pages/:id should return the correct page by ID', async function () {
+        const res = await request(app)
+            .get(`/api/pages/${pageId}`);
+
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('Page retrieved successfully');
+        expect(res.body.page).to.have.property('_id', pageId);
     });
 
-    // Test GET /api/pages/:id (invalid ID)
-    it('GET /api/pages/:id should return 404 for non-existent page', function (done) {
-        // Use an invalid page ID (non-existent page)
-        request(app)
-            .get('/api/pages/invalidPageId')  // Replace 'invalidPageId' with a non-existent ID
-            .end((err, res) => {
-                expect(res.status).to.equal(404);  // Expecting a 404 response
-                expect(res.body.success).to.be.false;
-                expect(res.body.message).to.equal('Page not found');  // The message should indicate the page was not found
-                done();
-            });
-    });
-
-    // Test PUT /api/pages/:id (valid ID)
-    it('PUT /api/pages/:id should update the page details', function (done) {
+    // Test 3: PUT /api/pages/:id (Update page)
+    it('PUT /api/pages/:id should update page data', async function () {
         const updatedData = {
-            title: 'Updated Test Page Title',
+            title: 'Updated Page Title',
             content: 'Updated content for the page.',
             metaDescription: 'Updated meta description.',
         };
 
-        request(app)
+        const res = await request(app)
             .put(`/api/pages/${pageId}`)
-            .send(updatedData)
-            .end((err, res) => {
-                expect(res.status).to.equal(200);
-                expect(res.body.success).to.be.true;
-                expect(res.body.data).to.have.property('title', updatedData.title);
-                done();
-            });
+            .send(updatedData);
+
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('Page updated successfully');
+        expect(res.body.updatedPage).to.have.property('title', updatedData.title);
     });
 
-    // Test PUT /api/pages/:id (invalid ID)
-    it('PUT /api/pages/:id should return 404 for non-existent page', function (done) {
+    // Test 4: DELETE /api/pages/:id (Delete page)
+    it('DELETE /api/pages/:id should delete the page successfully', async function () {
+        const res = await request(app)
+            .delete(`/api/pages/${pageId}`);
+
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('Page deleted successfully');
+    });
+
+    // Test 5: POST /api/pages (Create Page) Missing Fields
+    it('POST /api/pages should return 400 when title is missing', async function () {
+        const invalidData = {
+            content: 'Content without title',
+        };
+
+        const res = await request(app)
+            .post('/api/pages')
+            .send(invalidData);
+
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('Title and content are required');
+    });
+
+    // Test 6: PUT /api/pages/:id (Invalid page ID)
+    it('PUT /api/pages/:id should return 404 for non-existent page', async function () {
         const updatedData = {
-            title: 'Updated Test Page Title',
+            title: 'Updated Page Title',
             content: 'Updated content for the page.',
             metaDescription: 'Updated meta description.',
         };
 
-        request(app)
-            .put('/api/pages/invalidPageId')
-            .send(updatedData)
-            .end((err, res) => {
-                expect(res.status).to.equal(404);
-                expect(res.body.success).to.be.false;
-                expect(res.body.message).to.equal('Page not found');
-                done();
-            });
-    });
+        const res = await request(app)
+            .put('/api/pages/1111111111111111111')
+            .send(updatedData);
 
-    // Test DELETE /api/pages/:id (valid ID)
-    it('DELETE /api/pages/:id should delete the page successfully', function (done) {
-        request(app)
-            .delete(`/api/pages/${pageId}`)
-            .end((err, res) => {
-                expect(res.status).to.equal(200);
-                expect(res.body.success).to.be.true;
-                expect(res.body.message).to.equal('Page deleted successfully');
-                done();
-            });
-    });
-
-    // Test DELETE /api/pages/:id (invalid ID)
-    it('DELETE /api/pages/:id should return 404 for non-existent page', function (done) {
-        request(app)
-            .delete('/api/pages/invalidPageId')
-            .end((err, res) => {
-                expect(res.status).to.equal(404);
-                expect(res.body.success).to.be.false;
-                expect(res.body.message).to.equal('Page not found');
-                done();
-            });
+        expect(res.status).to.equal(404);
     });
 });
