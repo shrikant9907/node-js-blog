@@ -1,13 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./src/config/db');
-const errorHandlerMiddleware = require('./src/middlewares/errorHandlerMiddleware');
+import express from 'express';
+import cors from 'cors';
+import connectDB from './src/config/db.mjs'; // Adjusted for ES Module import
+import errorHandlerMiddleware from './src/middlewares/errorHandlerMiddleware.js'; // Adjusted for ES Module import
 
 // Importing Routes
-// const blogRoutes = require('./src/routes/blogRoutes');
-const categoryRoutes = require('./src/routes/categoryRoutes');
-// const tagRoutes = require('./src/routes/tagRoutes');
-// const pageRoutes = require('./src/routes/pageRoutes');
+import categoryRoutes from './src/routes/categoryRoutes.js'; // Adjusted for ES Module import
+// import blogRoutes from './src/routes/blogRoutes.js';
+// import tagRoutes from './src/routes/tagRoutes.js';
+// import pageRoutes from './src/routes/pageRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,3 +36,6 @@ connectDB();
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Export app as default for testing or other imports
+export default app;
