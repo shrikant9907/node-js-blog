@@ -7,6 +7,7 @@ const router = express.Router();
  * @swagger
  * /api/categories:
  *   get:
+ *     tags: [Categories] 
  *     summary: Retrieve all categories
  *     responses:
  *       200:
@@ -18,6 +19,7 @@ router.get('/', categoryController.getAllCategories);
  * @swagger
  * /api/categories:
  *   post:
+ *     tags: [Categories] 
  *     summary: Create a new category
  *     requestBody:
  *       required: true
@@ -40,6 +42,7 @@ router.post('/', categoryController.createCategory);
  * @swagger
  * /api/categories/{id}:
  *   get:
+ *     tags: [Categories] 
  *     summary: Retrieve a category by its ID
  *     parameters:
  *       - in: path
@@ -60,6 +63,7 @@ router.get('/:id', categoryController.getCategoryById);
  * @swagger
  * /api/categories/{id}:
  *   put:
+ *     tags: [Categories] 
  *     summary: Update a category by its ID
  *     parameters:
  *       - in: path
@@ -91,6 +95,7 @@ router.put('/:id', categoryController.updateCategory);
  * @swagger
  * /api/categories/{id}:
  *   patch:
+ *     tags: [Categories] 
  *     summary: Partially update a category by its ID
  *     parameters:
  *       - in: path
@@ -122,6 +127,7 @@ router.patch('/:id', categoryController.patchCategory);
  * @swagger
  * /api/categories/{id}:
  *   delete:
+ *     tags: [Categories] 
  *     summary: Delete a category by its ID
  *     parameters:
  *       - in: path

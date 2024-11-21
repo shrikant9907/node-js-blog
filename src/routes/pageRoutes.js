@@ -7,6 +7,7 @@ const router = express.Router();
  * @swagger
  * /api/pages:
  *   get:
+ *     tags: [Pages] 
  *     summary: Retrieve all pages
  *     responses:
  *       200:
@@ -18,6 +19,7 @@ router.get('/', pageController.getAllPages);
  * @swagger
  * /api/pages:
  *   post:
+ *     tags: [Pages] 
  *     summary: Create a new page
  *     requestBody:
  *       required: true
@@ -42,6 +44,7 @@ router.post('/', pageController.createPage);
  * @swagger
  * /api/pages/{id}:
  *   get:
+ *     tags: [Pages] 
  *     summary: Retrieve a page by its ID
  *     parameters:
  *       - in: path
@@ -62,6 +65,7 @@ router.get('/:id', pageController.getPageById);
  * @swagger
  * /api/pages/{id}:
  *   put:
+ *     tags: [Pages] 
  *     summary: Update a page by its ID
  *     parameters:
  *       - in: path
@@ -95,6 +99,7 @@ router.put('/:id', pageController.updatePage);
  * @swagger
  * /api/pages/{id}:
  *   delete:
+ *     tags: [Pages] 
  *     summary: Delete a page by its ID
  *     parameters:
  *       - in: path

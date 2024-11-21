@@ -17,7 +17,8 @@ const PORT = process.env.PORT || 5000;
 // Define the CORS options
 const corsOptions = {
   credentials: true,
-  origin: ['http://localhost:3000', 'http://localhost:80']
+  origin: "*",
+  // origin: ['http://localhost:3000', 'http://localhost:80']
 };
 
 // Swagger Setup
