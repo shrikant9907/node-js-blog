@@ -7,7 +7,7 @@ import swaggerUi from 'swagger-ui-express'; // Import swagger-ui-express
 
 // Importing Routes
 import categoryRoutes from './src/routes/categoryRoutes.js'; // Adjusted for ES Module import
-// import blogRoutes from './src/routes/blogRoutes.js';
+import postRoutes from './src/routes/postRoutes.js';
 import tagRoutes from './src/routes/tagRoutes.js';
 import pageRoutes from './src/routes/pageRoutes.js';
 import morgan from 'morgan';
@@ -43,7 +43,11 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Middleware
-app.use(morgan());
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined'));
+} else {
+  app.use(morgan('dev'));
+}
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(errorHandlerMiddleware); // Error handling middleware
@@ -52,7 +56,7 @@ app.use(errorHandlerMiddleware); // Error handling middleware
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
-// app.use('/api/posts', blogRoutes);
+app.use('/api/posts', postRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/pages', pageRoutes);
