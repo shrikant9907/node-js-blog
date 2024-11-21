@@ -1,12 +1,11 @@
 {
-  "name": "nodejs-todolist",
+  "name": "node-js-blog",
   "version": "1.0.0",
-  "description": "Todo List API using Node.js, Express, and MongoDB",
+  "description": "Blog Application API using Node.js, Express, and MongoDB",
   "main": "app.js",
   "scripts": {
     "start": "node --env-file=.env.production app.js",
-    "dev": "nodemon --env-file=.env app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --env-file=.env app.js"
   },
   "keywords": [
     "todo",
@@ -18,10 +17,19 @@
   "author": "Shrikant Yadav",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
-    "mongoose": "^8.0.2"
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "slugify": "^1.6.6",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
