@@ -1,8 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./src/config/db');
-const todoRoutes = require('./src/routes/todoRoutes');
 const errorHandlerMiddleware = require('./src/middlewares/errorHandlerMiddleware');
+
+// Importing Routes
+// const blogRoutes = require('./src/routes/blogRoutes');
+const categoryRoutes = require('./src/routes/categoryRoutes');
+// const tagRoutes = require('./src/routes/tagRoutes');
+// const pageRoutes = require('./src/routes/pageRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,19 +18,19 @@ const corsOptions = {
   origin: ['http://localhost:3000', 'http://localhost:80']
 };
 
-app.use(cors(corsOptions));
-
-// Connect to MongoDB
-connectDB();
-
 // Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(errorHandlerMiddleware); // Error handling middleware
 
 // Routes
-app.use('/api/todos', todoRoutes);
+// app.use('/api/posts', blogRoutes);
+app.use('/api/categories', categoryRoutes);
+// app.use('/api/tags', tagRoutes);
+// app.use('/api/pages', pageRoutes);
 
-// Error handling middleware
-app.use(errorHandlerMiddleware);
+// Connect with DB
+connectDB();
 
 // Start the server
 app.listen(PORT, () => {
