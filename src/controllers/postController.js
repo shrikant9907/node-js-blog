@@ -20,15 +20,15 @@ const getAllPosts = asyncHandler(async (req, res) => {
 
 // Get post by ID
 const getPostById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params;  // Extract the post ID from the request parameters
 
   const postResponse = await postService.getPostById(id);
 
-  if (!postResponse.success) {
-    return res.status(404).json({ message: postResponse.message });
-  }
-
-  res.status(200).json({ message: postResponse.message, post: postResponse.data });
+  // Dynamically set the status code based on the response from the service
+  return res.status(postResponse.statusCode).json({
+    message: postResponse.message,
+    post: postResponse.data || null,  // Include post data if found, otherwise null
+  });
 });
 
 // Create a new post
@@ -41,10 +41,17 @@ const createPost = asyncHandler(async (req, res) => {
 
   const postResponse = await postService.createPost({ title, content, author });
 
+  // Check if the post creation failed due to conflict (409)
+  if (!postResponse.success && postResponse.statusCode === 409) {
+    return res.status(409).json({ message: postResponse.message });  // Conflict status code
+  }
+
+  // Handle other errors (internal server error)
   if (!postResponse.success) {
     return res.status(500).json({ message: postResponse.message });
   }
 
+  // Successful post creation
   res.status(201).json({ message: postResponse.message, newPost: postResponse.data });
 });
 

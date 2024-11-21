@@ -1,5 +1,6 @@
 const Page = require('../models/pageModel');
-const logger = require('../utils/logger');  // Import the logger
+const logger = require('../utils/logger');
+const mongoose = require('mongoose');
 
 /**
  * Get all pages with pagination
@@ -81,6 +82,12 @@ const createPage = async ({ title, content, metaDescription }) => {
  */
 const getPageById = async (id) => {
   try {
+
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const page = await Page.findById(id);
 
     if (!page) {
@@ -103,6 +110,11 @@ const getPageById = async (id) => {
  */
 const updatePage = async (id, { title, content, metaDescription }) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const updatedPage = await Page.findByIdAndUpdate(
       id,
       { title, content, metaDescription },
@@ -129,6 +141,11 @@ const updatePage = async (id, { title, content, metaDescription }) => {
  */
 const deletePage = async (id) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const deletedPage = await Page.findByIdAndDelete(id);
 
     if (!deletedPage) {

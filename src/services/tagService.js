@@ -1,6 +1,7 @@
 const Tag = require("../models/tagModel");
 const slugify = require('slugify');
-const logger = require('../utils/logger');  // Importing the logger
+const logger = require('../utils/logger');
+const mongoose = require('mongoose');
 
 // Get all tags with pagination
 const getTagsWithPagination = async (skip, limit) => {
@@ -70,6 +71,11 @@ const createTag = async ({ name }) => {
 // Get tag by ID
 const getTagById = async (id) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const tag = await Tag.findById(id);
     if (!tag) {
       logger.warn(`Tag with ID ${id} not found`);  // Log a warning if the tag is not found
@@ -86,6 +92,10 @@ const getTagById = async (id) => {
 // Update an existing tag
 const updateTag = async (id, { name }) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
     const updatedTag = await Tag.findByIdAndUpdate(
       id,
       { name },
@@ -108,6 +118,11 @@ const updateTag = async (id, { name }) => {
 // Delete a tag
 const deleteTag = async (id) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const deletedTag = await Tag.findByIdAndDelete(id);
 
     if (!deletedTag) {

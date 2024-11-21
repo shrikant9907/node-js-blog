@@ -1,6 +1,7 @@
 const Category = require("../models/CategoryModel");
 const slugify = require('slugify');
 const logger = require('../utils/logger');  // Import the logger
+const mongoose = require('mongoose');
 
 // Get all categories with pagination
 const getCategoriesWithPagination = async (skip, limit) => {
@@ -71,6 +72,12 @@ const createCategory = async ({ name, description }) => {
 // Get category by ID
 const getCategoryById = async (id) => {
   try {
+
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const category = await Category.findById(id);
 
     if (!category) {
@@ -88,6 +95,11 @@ const getCategoryById = async (id) => {
 // Update an existing category
 const updateCategory = async (id, { name, description }) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { name, description },
@@ -110,6 +122,11 @@ const updateCategory = async (id, { name, description }) => {
 // Delete a category
 const deleteCategory = async (id) => {
   try {
+    // Validate the ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { statusCode: 404, success: false, message: 'Invalid ID format', data: null };
+    }
+
     const deletedCategory = await Category.findByIdAndDelete(id);
 
     if (!deletedCategory) {
