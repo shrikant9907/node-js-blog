@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const postService = require('../services/postService');
+const { StatusCodes } = require('http-status-codes');
+const { validateObjectId, sendResponse } = require('../utils/helper');
 
 // Get all posts
 const getAllPosts = asyncHandler(async (req, res) => {
@@ -8,27 +10,32 @@ const getAllPosts = asyncHandler(async (req, res) => {
   const postsResponse = await postService.getAllPosts(parseInt(skip), parseInt(limit));
 
   if (!postsResponse.success) {
-    return res.status(500).json({ message: postsResponse.message });
+    return sendResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, postsResponse.message);
   }
 
   if (postsResponse.data.length === 0) {
-    return res.status(200).json({ message: 'No posts found', posts: [] });
+    return sendResponse(res, StatusCodes.OK, 'No posts found', []);
   }
 
-  res.status(200).json({ message: postsResponse.message, posts: postsResponse.data });
+  sendResponse(res, StatusCodes.OK, postsResponse.message, postsResponse.data);
 });
 
 // Get post by ID
 const getPostById = asyncHandler(async (req, res) => {
-  const { id } = req.params;  // Extract the post ID from the request parameters
+  const { id } = req.params;
+
+  if (!validateObjectId(id)) {
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'Invalid post ID');
+  }
 
   const postResponse = await postService.getPostById(id);
 
-  // Dynamically set the status code based on the response from the service
-  return res.status(postResponse.statusCode).json({
-    message: postResponse.message,
-    post: postResponse.data || null,  // Include post data if found, otherwise null
-  });
+  sendResponse(
+    res,
+    postResponse.statusCode,
+    postResponse.message,
+    postResponse.data || null
+  );
 });
 
 // Create a new post
@@ -36,23 +43,20 @@ const createPost = asyncHandler(async (req, res) => {
   const { title, content, author } = req.body;
 
   if (!title || !content || !author) {
-    return res.status(400).json({ message: 'Title, content, and author are required' });
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'Title, content, and author are required');
   }
 
   const postResponse = await postService.createPost({ title, content, author });
 
-  // Check if the post creation failed due to conflict (409)
-  if (!postResponse.success && postResponse.statusCode === 409) {
-    return res.status(409).json({ message: postResponse.message });  // Conflict status code
-  }
-
-  // Handle other errors (internal server error)
   if (!postResponse.success) {
-    return res.status(500).json({ message: postResponse.message });
+    return sendResponse(
+      res,
+      postResponse.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+      postResponse.message
+    );
   }
 
-  // Successful post creation
-  res.status(201).json({ message: postResponse.message, newPost: postResponse.data });
+  sendResponse(res, StatusCodes.CREATED, postResponse.message, postResponse.data);
 });
 
 // Update an existing post
@@ -60,10 +64,14 @@ const updatePost = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { title, content, author } = req.body;
 
+  if (!validateObjectId(id)) {
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'Invalid post ID');
+  }
+
   const postResponse = await postService.getPostById(id);
 
   if (!postResponse.success) {
-    return res.status(404).json({ message: postResponse.message });
+    return sendResponse(res, StatusCodes.NOT_FOUND, postResponse.message);
   }
 
   const updatedFields = {
@@ -75,13 +83,10 @@ const updatePost = asyncHandler(async (req, res) => {
   const updateResponse = await postService.updatePost(id, updatedFields);
 
   if (!updateResponse.success) {
-    return res.status(500).json({ message: updateResponse.message });
+    return sendResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, updateResponse.message);
   }
 
-  res.status(200).json({
-    message: updateResponse.message,
-    updatedPost: updateResponse.data,
-  });
+  sendResponse(res, StatusCodes.OK, updateResponse.message, updateResponse.data);
 });
 
 // Partially update a post
@@ -89,51 +94,79 @@ const patchPost = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { title, content, author } = req.body;
 
+  if (!validateObjectId(id)) {
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'Invalid post ID');
+  }
+
   const postResponse = await postService.getPostById(id);
 
   if (!postResponse.success) {
-    return res.status(404).json({ message: postResponse.message });
+    return sendResponse(res, StatusCodes.NOT_FOUND, postResponse.message);
   }
 
   const updatedFields = {};
-
   if (title) updatedFields.title = title;
   if (content) updatedFields.content = content;
   if (author) updatedFields.author = author;
 
   if (Object.keys(updatedFields).length === 0) {
-    return res.status(400).json({ message: 'No fields provided to update' });
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'No fields provided to update');
   }
 
   const patchResponse = await postService.patchPost(id, updatedFields);
 
   if (!patchResponse.success) {
-    return res.status(500).json({ message: patchResponse.message });
+    return sendResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, patchResponse.message);
   }
 
-  res.status(200).json({
-    message: patchResponse.message,
-    updatedPost: patchResponse.data,
-  });
+  sendResponse(res, StatusCodes.OK, patchResponse.message, patchResponse.data);
 });
 
 // Delete a post
 const deletePost = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
+  if (!validateObjectId(id)) {
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'Invalid post ID');
+  }
+
   const postResponse = await postService.getPostById(id);
 
   if (!postResponse.success) {
-    return res.status(404).json({ message: postResponse.message });
+    return sendResponse(res, StatusCodes.NOT_FOUND, postResponse.message);
   }
 
   const deleteResponse = await postService.deletePost(id);
 
   if (!deleteResponse.success) {
-    return res.status(500).json({ message: deleteResponse.message });
+    return sendResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, deleteResponse.message);
   }
 
-  res.status(200).json({ message: deleteResponse.message });
+  sendResponse(res, StatusCodes.OK, deleteResponse.message);
+});
+
+// Upload image for a post
+const uploadPostImage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!validateObjectId(id)) {
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'Invalid post ID');
+  }
+
+  // Check if file was uploaded
+  if (!req.file) {
+    return sendResponse(res, StatusCodes.BAD_REQUEST, 'No file uploaded');
+  }
+
+  const imageUrl = `/uploads/${req.file.filename}`; // Or store the full URL if using a cloud service
+
+  const postResponse = await postService.addImageToPost(id, imageUrl);
+
+  if (!postResponse.success) {
+    return sendResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, postResponse.message);
+  }
+
+  sendResponse(res, StatusCodes.OK, 'Image uploaded successfully', postResponse.data);
 });
 
 module.exports = {
@@ -143,4 +176,5 @@ module.exports = {
   updatePost,
   patchPost,
   deletePost,
+  uploadPostImage,
 };

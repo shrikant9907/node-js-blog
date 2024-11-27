@@ -6,14 +6,18 @@ import swaggerJSDoc from 'swagger-jsdoc'; // Import swagger-jsdoc
 import swaggerUi from 'swagger-ui-express'; // Import swagger-ui-express
 
 // Importing Routes
-import categoryRoutes from './src/routes/categoryRoutes.js'; // Adjusted for ES Module import
+import categoryRoutes from './src/routes/categoryRoutes.js';
 import postRoutes from './src/routes/postRoutes.js';
 import tagRoutes from './src/routes/tagRoutes.js';
 import pageRoutes from './src/routes/pageRoutes.js';
+import commentRoutes from './src/routes/commentRoutes.js';
 import morgan from 'morgan';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Serve the uploads directory
+// app.use('/uploads', express.static('uploads'));
 
 // Define the CORS options
 const corsOptions = {
@@ -60,6 +64,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/pages', pageRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Connect with DB
 connectDB();
