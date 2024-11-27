@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 import connectDB from './src/config/db.mjs'; // Adjusted for ES Module import
 import errorHandlerMiddleware from './src/middlewares/errorHandlerMiddleware.js'; // Adjusted for ES Module import
 import swaggerJSDoc from 'swagger-jsdoc'; // Import swagger-jsdoc
@@ -11,13 +12,13 @@ import postRoutes from './src/routes/postRoutes.js';
 import tagRoutes from './src/routes/tagRoutes.js';
 import pageRoutes from './src/routes/pageRoutes.js';
 import commentRoutes from './src/routes/commentRoutes.js';
-import morgan from 'morgan';
+import mediaRoutes from './src/routes/mediaRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Serve the uploads directory
-// app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 
 // Define the CORS options
 const corsOptions = {
@@ -65,6 +66,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/medias', mediaRoutes);
 
 // Connect with DB
 connectDB();
